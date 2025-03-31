@@ -64,8 +64,7 @@ Following image shows a high-level architecture of how the BRC20 indexer and The
 
 ![Architecture](architecture.png)
 
-> [!NOTE]
-> Integration details will be published after the `JSON-RPC` protocol details are finalized.
+[You can find the integration details here](https://github.com/bestinslot-xyz/brc20-programmable-module?tab=readme-ov-file#indexer-integration-guide)
 
 ## Operations
 
