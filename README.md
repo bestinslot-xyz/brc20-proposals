@@ -42,15 +42,19 @@ Additionally, we've written several custom pre-compiled contracts:
 
 - `0x00000000000000000000000000000000000000fd`: Get Bitcoin transaction details using tx ids. This enables interoperability with Bitcoin and bonding curve style token minting and selling using BTC.
 
+- `0x00000000000000000000000000000000000000fc`: Get last satoshi location given txid, vout and sat number using the rules at [ordinals/ord/blob/master/bip.mediawiki](https://github.com/ordinals/ord/blob/master/bip.mediawiki)
+
+- `0x00000000000000000000000000000000000000fb`: Get the time lock wallet pkscript for a given p2tr pkscript and a lock duration. This works according to our proposal in [ordinals/ord/issues/4256#issuecomment-2700779238](https://github.com/ordinals/ord/issues/4256#issuecomment-2700779238)
+
 This list can be expanded before release.
 
 Since EVM operates with a different address format than Bitcoin, we've added an easy-to-use address translation method:
 
-`evm_addr = keccak256(bitcoin_pkscript).slice(-40)`
+`evm_addr = keccak256(bitcoin_pkscript_bytes).slice(-40)`
 
 This EVM address does not have a private key attached, so it cannot sign messages. For this reason, smart contract developers should avoid `ecrecover` and use the custom precompile for `BIP-322` signature check. If it succeeds, use `evm_addr` as verified user address. We'll add helper Solidity libraries for these standard use cases.
 
-The execution engine will be completely open-source and is currently a work in progress.
+The execution engine is completely open-source and is currently a work in progress.
 
 ## Integration
 
@@ -121,10 +125,7 @@ To activate a smart contract deployment, the inscription should be sent to `OP_R
 
 When an indexer indexes this inscription, an `EVM address` will be generated from the `btc pkscript` of the wallet that sent the inscription to the module. 
 
-At this point, the Executor will execute this operation with the same rules as `EVM`, and if the execution is successful, a new smart contract will be deployed to the state of the Executor. 
-
-> [!NOTE]
-> The indexer should save the `inscription_id` and `smart_contract_address` pair since the `function call` operation can point to either address or inscription_id.
+At this point, the Executor will execute this operation with the same rules as `EVM`, and if the execution is successful, a new smart contract will be deployed to the state of the Executor.
 
 ### Function Call
 
@@ -150,7 +151,7 @@ Since data may contain several repetitions, we intend to add future support for 
 
 Since we are using EVM (with a different block time and a different data layer), we can easily use the DoS prevention methods that are used in other EVM chains. The easiest way to limit the maximum needed execution in a block is to set a block gas limit.
 
-The details of how the gas limit will work have not been finalized. We're considering  setting a per-byte gas limit for each operation. This way, we can limit the maximum possible gas used in a single block.
+The details of how the gas limit will work have not been finalized. We currently set a 12000 per-byte gas limit for each operation. This way, we can limit the maximum possible gas used in a single block.
 
 Additionally, if a user wants to run an operation with more gas, they can pad spaces to the inscription to increase the allowed gas limit. This approach imposes a cost on potential DoS attacks, forcing attackers to fill several blocks to meaningfully impact indexing. Additionally, the cost of an attack will increase incrementally due to the open-market structure of the Bitcoin fee market.
 
@@ -160,4 +161,4 @@ We will expand this section as we and/or other developers in the community disco
 
 ## Indexing Rules
 
-TBD after the protocol details are finalized.
+Indexing rules are detailed in [Programmable Module Indexer Integration guide](https://github.com/bestinslot-xyz/brc20-programmable-module#indexer-integration-guide)
