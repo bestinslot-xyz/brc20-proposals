@@ -115,10 +115,16 @@ An example smart contract deployment would look like the following:
 ```json
 {
     "p": "brc20-prog",
-    "op": "deploy",
+    "op": "d",
     "d": "<bytecode + constructor_args in hex>"
 }
 ```
+
+#### Fields
+
+- **p**: Name of the `brc20-prog` module
+- **op**: This can be "deploy", or "d" for short, for contract deployment inscriptions
+- **d**: Deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller as a hex string with a 0x prefix. e.g. `0x12345..BCDEF`
 
 To activate a smart contract deployment, the inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
@@ -128,17 +134,28 @@ At this point, the Executor will execute this operation with the same rules as `
 
 ### Function Call
 
-We propose the following to inscribe a function call:
+We propose the following structure to inscribe a function call:
 
 ```json
 {
     "p": "brc20-prog",
-    "op": "call",
+    "op": "c",
     "c": "<contract_addr>",
-    "i": "<inscription_id>", // only one of c or i can be inscribed.
-    "d": "<data>" // arguments are pre-packed into data by the caller.
+    "i": "<inscription_id>",
+    "d": "<data>"
 }
 ```
+
+#### Fields
+
+- **p**: Name of the `brc20-prog` module
+- **op**: This can be "call", or "c" for short, for call inscriptions
+- **c**: Contract Address
+- **i**: Inscription ID for the Contract Deployment
+- **d**: Arguments for the calldata, pre-packed by the caller as a hex string with a 0x prefix. e.g. `0x12345..BCDEF`
+
+> [!NOTE]
+> Only one of "c" or "i" fields should be inscribed, as the contract to call can be ambiguous.
 
 To activate the function call, this inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
