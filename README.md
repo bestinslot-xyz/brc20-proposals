@@ -167,13 +167,13 @@ To activate the function call, this inscription should be sent to `OP_RETURN "BR
 
 ### Data Format and Compression Support
 
-`"d"` field in deploy and call inscriptions is used to communicate with the underlying EVM.
+`"d"` or `"b"` field in deploy and call inscriptions is used to communicate with the underlying EVM.
 
-Before the compression activation block height `<TBD>`, data is always sent uncompressed, and hex encoded with a 0x prefix e.g. `0x1234567..EF`. These are the first BRC2.0 inscriptions on Signet, and this format will never be used on mainnet.
+If using `"d"` field, data is always sent uncompressed, and hex encoded with a 0x prefix e.g. `0x1234567..EF`.
 
 Calldata may contain repetitions and often zero-heavy, so it's suitable for compression. Compressing and encoding the inscription data helps us reduce the on-chain costs.
 
-After the compression activation block height `<TBD>`, data is sent as a base64 encoded byte array to make it JSON-safe and compact. The first byte of the decoded payload now defines the compression method used:
+If using `"d"` field, data is sent as a base64 encoded byte array to make it JSON-safe and compact. The first byte of the decoded payload now defines the compression method used:
 
 - `00`: Uncompressed byte array
 - `01`: NADA compression — our custom zero-run-length encoding, optimized for data with large spans of zeroes. Libraries available in [Rust](https://crates.io/crates/nada) and [JavaScript](https://www.npmjs.com/@bestinslot/nada) and the code is available in our [bestinslot-xyz/nada-rs](https://github.com/bestinslot-xyz/nada-rs) and [bestinslot-xyz/nada-js](https://github.com/bestinslot-xyz/nada-js).
@@ -211,9 +211,6 @@ We then base64 encode the byte array to produce the final inscription data of 56
 
 <code>AaI8yxP/DN6tCcfRYhydSe3VwHCTO1AKxb7v/x9g/x8q/x8Eb3Jkaf8c</code>
 
-> [!WARNING]
-> Signet BRC2.0 inscriptions below activation height `<TBD>` are always uncompressed, and sent with a hex encoded `0x1234567...EF` format.
-
 ### Gas Usage and Limit
 
 Users only pay for Bitcoin transactions, to inscribe data on-chain. There is no additional "gas-token" to interact with BRC2.0, and the topic of "gas" is handled at the indexer level, primarily to prevent certain types of attacks towards indexers.
@@ -250,6 +247,7 @@ Indexing rules are detailed in [Programmable Module Indexer Integration guide](h
 
 ### 12 Jun 2025
 - Added compression and base64 encoding support using the "b" field of the inscription
+- Removed note for compression activation block height, as it's no longer a requirement
 
 ### 20 May 2025
 - Added a github link for the execution engine
