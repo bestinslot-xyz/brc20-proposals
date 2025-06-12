@@ -32,7 +32,7 @@ We chose `EVM` for the virtual machine and are building a custom `EVM` execution
 
 The customized `revm` execution engine only handles the VM execution part of Ethereum. It doesn't compute any other blockchain operations. There is no "block production" or any kind of PoS validation mechanism. This simplified approach allows the execution engine to be an estimated 10x more performant than it would be as part of a PoS blockchain.
 
-The engine can set some blockchain-level variables, such as custom block-hash, block- height, timestamp, and coinbase (same as in Bitcoin), before executing operations.
+The engine can set some blockchain-level variables, such as custom block hash, block height, timestamp, and coinbase (same as in Bitcoin), before executing operations.
 
 Additionally, we've written several custom pre-compiled contracts:
 
@@ -54,7 +54,7 @@ Since EVM operates with a different address format than Bitcoin, we've added an 
 
 This EVM address does not have a private key attached, so it cannot sign messages. For this reason, smart contract developers should avoid `ecrecover` and use the custom precompile for `BIP-322` signature check. If it succeeds, use `evm_addr` as verified user address. We'll add helper Solidity libraries for these standard use cases.
 
-The execution engine is completely open-source and is currently a work in progress.
+The execution engine is completely open-source and can be found at [bestinslot-xyz/brc20-programmable-module](https://github.com/bestinslot-xyz/brc20-programmable-module).
 
 ## Integration
 
@@ -116,7 +116,8 @@ An example smart contract deployment would look like the following:
 {
     "p": "brc20-prog",
     "op": "d",
-    "d": "<bytecode + constructor_args in hex>"
+    "d": "<0x prefixed hex string bytecode + constructor args>",
+    "b": "<base64 encoded bytecode + constructor args, format explained below>"
 }
 ```
 
@@ -124,7 +125,7 @@ An example smart contract deployment would look like the following:
 
 - **p**: Name of the `brc20-prog` module
 - **op**: This can be "deploy", or "d" for short, for contract deployment inscriptions
-- **d**: Deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller as a hex string with a 0x prefix. e.g. `0x12345..BCDEF`
+- **d**: Deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller. [Format explained below](#data-format-and-compression-support).
 
 To activate a smart contract deployment, the inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
@@ -142,7 +143,8 @@ We propose the following structure to inscribe a function call:
     "op": "c",
     "c": "<contract_addr>",
     "i": "<inscription_id>",
-    "d": "<data>"
+    "d": "<0x prefixed hex string calldata>",
+    "b": "<base64 encoded calldata, format explained below>"
 }
 ```
 
@@ -152,14 +154,73 @@ We propose the following structure to inscribe a function call:
 - **op**: This can be "call", or "c" for short, for call inscriptions
 - **c**: Contract Address
 - **i**: Inscription ID for the Contract Deployment
-- **d**: Arguments for the calldata, pre-packed by the caller as a hex string with a 0x prefix. e.g. `0x12345..BCDEF`
+- **b**: Arguments for the calldata, pre-packed by the caller, compressed and base64 encoded. [Format explained below](#data-format-and-compression-support).
+- **d**: Arguments for the calldata, alternatively, pre-packed by the caller, using raw 0x prefixed hex string.
 
-> [!NOTE]
+> [!WARNING]
 > Only one of "c" or "i" fields should be inscribed, as the contract to call can be ambiguous.
+
+> [!WARNING]
+> Only one of "b" or "d" fields should be inscribed, so the data should be either base64 encoded or represented as a 0x prefixed hex string.
 
 To activate the function call, this inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
-Since data may contain several repetitions, we intend to add future support for compression on the data field.
+### Data Format and Compression Support
+
+`"d"` field in deploy and call inscriptions is used to communicate with the underlying EVM.
+
+Before the compression activation block height `<TBD>`, data is always sent uncompressed, and hex encoded with a 0x prefix e.g. `0x1234567..EF`. These are the first BRC2.0 inscriptions on Signet, and this format will never be used on mainnet.
+
+Calldata may contain repetitions and often zero-heavy, so it's suitable for compression. Compressing and encoding the inscription data helps us reduce the on-chain costs.
+
+After the compression activation block height `<TBD>`, data is sent as a base64 encoded byte array to make it JSON-safe and compact. The first byte of the decoded payload now defines the compression method used:
+
+- `00`: Uncompressed byte array
+- `01`: NADA compression — our custom zero-run-length encoding, optimized for data with large spans of zeroes. Libraries available in [Rust](https://crates.io/crates/nada) and [JavaScript](https://www.npmjs.com/@bestinslot/nada) and the code is available in our [bestinslot-xyz/nada-rs](https://github.com/bestinslot-xyz/nada-rs) and [bestinslot-xyz/nada-js](https://github.com/bestinslot-xyz/nada-js).
+- `02`: Zstandard (zstd) — widely adopted compression algorithm developed by Meta. Standard libraries available on [facebook/zstd](https://github.com/facebook/zstd).
+
+Bytecode and calldata needs to be prefixed with a single-byte compression prefix, and then base64 encoded.
+
+#### Example
+
+Calling a method with signature `transfer(address receiver, bytes ticker, uint256 amount)` with following parameters:
+
+- receiver: `0xdead09C7d1621C9D49EdD5c070933b500ac5beef`
+- ticker: `ordi` as byte array [6f, 72, 64, 69]
+- amount: 42
+
+Generates the following abi encoded calldata:
+
+<code>0xa23ccb13000000000000000000000000dead09c7d1621c9d49edd5c070933b500ac5beef0000000000000000000000000000000000000000000000000000000000000060000000000000000000000000000000000000000000000000000000000000002a00000000000000000000000000000000000000000000000000000000000000046f72646900000000000000000000000000000000000000000000000000000000</code>
+
+Original length for the calldata is 164 bytes (330 characters).
+
+When the original calldata is nada encoded, length reduces to 41 bytes (84 characters):
+
+<code>0xa23ccb13ff0cdead09c7d1621c9d49edd5c070933b500ac5beefff1f60ff1f2aff1f046f726469ff1c</code>
+
+When the original calldata is zstd compressed (with compression level 22), length reduces to 58 bytes (118 characters):
+
+<code>0x28b52ffd20a48d01004402a23ccb1300dead09c7d1621c9d49edd5c070933b500ac5beef0060002a00046f726469000510006111b1880b166b01</code>
+
+In this case, we choose the nada encoded one, as it's the shortest, and prepend a 0x01 at the start to indicate this data is nada encoded:
+
+<code>0x<b>01</b>a23ccb13ff0cdead09c7d1621c9d49edd5c070933b500ac5beefff1f60ff1f2aff1f046f726469ff1c</code>
+
+We then base64 encode the byte array to produce the final inscription data of 56 characters:
+
+<code>AaI8yxP/DN6tCcfRYhydSe3VwHCTO1AKxb7v/x9g/x8q/x8Eb3Jkaf8c</code>
+
+> [!WARNING]
+> Signet BRC2.0 inscriptions below activation height `<TBD>` are always uncompressed, and sent with a hex encoded `0x1234567...EF` format.
+
+### Gas Usage and Limit
+
+Users only pay for Bitcoin transactions, to inscribe data on-chain. There is no additional "gas-token" to interact with BRC2.0, and the topic of "gas" is handled at the indexer level, primarily to prevent certain types of attacks towards indexers.
+
+We currently set a 12000 per-byte gas limit for each operation, which means an inscription that is 100 bytes in length is only allowed 1200000 gas to run. This way, we limit the maximum possible gas used in a single block as well. Currently, blocks have a 4MB size limit, so the amount of maximum gas per block corresponds to roughly 50B gas.
+
+Gas estimation can be retrieved before calling a function, and the inscription can be padded with extra spaces within the JSON object to increase the byte size. This will allow indexers to adjust the gas usage per inscription.
 
 ## Attack Vectors & Prevention
 
@@ -167,9 +228,15 @@ Since data may contain several repetitions, we intend to add future support for 
 
 Since we are using EVM (with a different block time and a different data layer), we can easily use the DoS prevention methods that are used in other EVM chains. The easiest way to limit the maximum needed execution in a block is to set a block gas limit.
 
-The details of how the gas limit will work have not been finalized. We currently set a 12000 per-byte gas limit for each operation. This way, we can limit the maximum possible gas used in a single block.
+We currently set a 12000 per-byte gas limit for each operation, which means an inscription that is 100 bytes in length is only allowed 1200000 gas to run. This way, we limit the maximum possible gas used in a single block as well. Currently, blocks have a 4MB size limit, so the amount of maximum gas per block corresponds to roughly 50B gas.
 
-Additionally, if a user wants to run an operation with more gas, they can pad spaces to the inscription to increase the allowed gas limit. This approach imposes a cost on potential DoS attacks, forcing attackers to fill several blocks to meaningfully impact indexing. Additionally, the cost of an attack will increase incrementally due to the open-market structure of the Bitcoin fee market.
+If a user wants to run an operation with more gas, they can pad spaces to the inscription to increase the allowed gas limit. This approach imposes a cost on potential DoS attacks, forcing attackers to fill several blocks to meaningfully impact indexing. Additionally, the cost of an attack will increase incrementally due to the open-market structure of the Bitcoin fee market.
+
+### Zip Bomb Attacks
+
+With compression support, attackers can impact indexing by potentially uploading huge calldata and bytecode. We're mitigating this by limiting the size of the uncompressed calldata to a 1MB buffer. Nada supports this via `nada::decode_with_limit` method and zstd libraries support this by returning an error if the buffer is full.
+
+Calldata, even with a full buffer of 1MB, is subject to the gas limits of the inscription byte length, so it can't keep the EVM occupied.
 
 ### Other Attacks
 
@@ -178,3 +245,17 @@ We will expand this section as we and/or other developers in the community disco
 ## Indexing Rules
 
 Indexing rules are detailed in [Programmable Module Indexer Integration guide](https://github.com/bestinslot-xyz/brc20-programmable-module#indexer-integration-guide)
+
+## Changelog
+
+### 12 Jun 2025
+- Added compression and base64 encoding support using the "b" field of the inscription
+
+### 20 May 2025
+- Added a github link for the execution engine
+- Introduced a section on calldata compression (nada, zstd)
+- Added a calldata encoding example (abi, nada, zstd, base64)
+- Added zip bomb mitigation strategy (1MB decode buffer)
+- Expanded "d" field docs for deploy/call operations
+- Noted compression activation block height (placeholder)
+- Added a gas limit section, explaining the 12k gas per inscribed byte limit
