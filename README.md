@@ -116,7 +116,8 @@ An example smart contract deployment would look like the following:
 {
     "p": "brc20-prog",
     "op": "d",
-    "d": "<bytecode + constructor_args, format explained below>"
+    "d": "<0x prefixed hex string bytecode + constructor args>",
+    "b": "<base64 encoded bytecode + constructor args, format explained below>"
 }
 ```
 
@@ -142,7 +143,8 @@ We propose the following structure to inscribe a function call:
     "op": "c",
     "c": "<contract_addr>",
     "i": "<inscription_id>",
-    "d": "<calldata, format explained below>"
+    "d": "<0x prefixed hex string calldata>",
+    "b": "<base64 encoded calldata, format explained below>"
 }
 ```
 
@@ -152,10 +154,14 @@ We propose the following structure to inscribe a function call:
 - **op**: This can be "call", or "c" for short, for call inscriptions
 - **c**: Contract Address
 - **i**: Inscription ID for the Contract Deployment
-- **d**: Arguments for the calldata, pre-packed by the caller. [Format explained below](#data-format-and-compression-support).
+- **b**: Arguments for the calldata, pre-packed by the caller, compressed and base64 encoded. [Format explained below](#data-format-and-compression-support).
+- **d**: Arguments for the calldata, alternatively, pre-packed by the caller, using raw 0x prefixed hex string.
 
 > [!WARNING]
 > Only one of "c" or "i" fields should be inscribed, as the contract to call can be ambiguous.
+
+> [!WARNING]
+> Only one of "b" or "d" fields should be inscribed, so the data should be either base64 encoded or represented as a 0x prefixed hex string.
 
 To activate the function call, this inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
@@ -241,6 +247,9 @@ We will expand this section as we and/or other developers in the community disco
 Indexing rules are detailed in [Programmable Module Indexer Integration guide](https://github.com/bestinslot-xyz/brc20-programmable-module#indexer-integration-guide)
 
 ## Changelog
+
+### 12 Jun 2025
+- Added compression and base64 encoding support using the "b" field of the inscription
 
 ### 20 May 2025
 - Added a github link for the execution engine
