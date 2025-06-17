@@ -166,6 +166,33 @@ We propose the following structure to inscribe a function call:
 
 To activate the function call, this inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
+### Signed ETH transactions
+
+Inscribed pre-signed transactions are also accepted by BRC2.0 to interact directly with the EVM. These signed transactions should follow the EIP-155 format with the correct chain ID and nonce values.
+
+We propose the following structure to inscribe a pre-signed raw ETH transaction:
+
+```json
+{
+    "p": "brc20-prog",
+    "op": "t",
+    "d": "<0x prefixed hex string for signed transaction>",
+    "b": "<base64 encoded calldata for the signed transaction, format explained below>"
+}
+```
+
+#### Fields
+
+- **p**: Name of the `brc20-prog` module
+- **op**: This can be "transact", or "t" for short, for raw transaction inscriptions
+- **b**: Pre-signed ETH transaction, compressed and base64 encoded. [Format explained below](#data-format-and-compression-support).
+- **d**: Pre-signed ETH transaction, alternatively, using raw 0x prefixed hex string.
+
+> [!WARNING]
+> Only one of "b" or "d" fields should be inscribed, so the transaction should be either base64 encoded or represented as a 0x prefixed hex string.
+
+To send the raw transaction, this inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
+
 ### Data Format and Compression Support
 
 `"d"` or `"b"` field in deploy and call inscriptions is used to communicate with the underlying EVM.
@@ -245,6 +272,9 @@ We will expand this section as we and/or other developers in the community disco
 Indexing rules are detailed in [Programmable Module Indexer Integration guide](https://github.com/bestinslot-xyz/brc20-programmable-module#indexer-integration-guide)
 
 ## Changelog
+
+### 17 Jun 2025
+- Added pre-signed transaction inscriptions to the proposal
 
 ### 12 Jun 2025
 - Added compression and base64 encoding support using the "b" field of the inscription
