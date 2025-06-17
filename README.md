@@ -125,7 +125,8 @@ An example smart contract deployment would look like the following:
 
 - **p**: Name of the `brc20-prog` module
 - **op**: This can be "deploy", or "d" for short, for contract deployment inscriptions
-- **d**: Deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller. [Format explained below](#data-format-and-compression-support).
+- **b**: Deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller, compressed and base64 encoded. [Format explained below](#data-format-and-compression-support).
+- **d**: Alternative to "b" field, deployment transaction for the smart contract with its constructor arguments, pre-packed by the caller, as a 0x prefixed hex string.
 
 To activate a smart contract deployment, the inscription should be sent to `OP_RETURN "BRC20PROG"` directly after being inscribed (in its second transaction).
 
