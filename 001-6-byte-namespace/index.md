@@ -35,7 +35,7 @@ Tickers of 4 or 5 bytes remain governed by existing rules and are not affected.
 
 Following [self-mint rules from 5-byte tickers](https://github.com/brc20-devs/brc20-proposals/blob/main/bp04-self-mint/proposal.md), BRC20 tokens with 6-byte tickers can be specified in the deploy operation as self-minted tokens.
 
-If the self-mint field is set to `true`, it allows everyone to mint the token. If it's unset, or set to any other value other than `true`, it defaults to false, meaning anyone can mint the token.
+If the self-mint field is set to `"true"`, it allows everyone to mint the token. If it's unset, or set to any other value other than `"true"`, it defaults to false, meaning anyone can mint the token.
 
 ## Snipe Protection via Pre-deploy Inscription
 
@@ -69,7 +69,7 @@ Then deployment is done by adding a "salt" field to the deploy operation:
 }
 ```
 
-The `salt` field is a random string that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
+The `salt` field is a hex string (Can only contain 0-9 and A-F) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
 
 Parent of the deploy inscription must be the pre-deploy inscription, and the deploy inscription must be created at least 3 blocks after the pre-deploy inscription. This allows the indexers to verify that the pre-deploy inscription exists and has been processed before the deploy inscription is created.
 
