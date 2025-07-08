@@ -41,7 +41,7 @@ If the self-mint field is set to `"true"`, it allows everyone to mint the token.
 
 To prevent sniping attacks on 6-byte tickers, we introduce a snipe protection mechanism with a pre-deploy command.
 
-Pre-deployment allows the creator to deploy a double hash of a salted ticker, without revealing the ticker. This hash is then used to verify the ticker during the actual deployment. This prevents anyone else from claiming a ticker by simply guessing it and/or frontrunning the deployment on blockchain.
+Pre-deployment allows the creator to deploy a double hash of a ticker, concatenated with a salt and the final deployer's pkscript, without revealing the ticker. This hash is then used to verify the ticker and deployer during the actual deployment. This prevents anyone else from claiming a ticker by simply guessing it and/or frontrunning the deployment on blockchain.
 
 Deploying inscriptions require a 3-block delay to ensure that the pre-deploy inscription is processed before the deploy inscription, so any deploy inscriptions that are earlier than 3 blocks after the pre-deploy should be rejected by the indexers. This delay allows the network to confirm the pre-deploy inscription and increases the costs of preemptively pre-deploying and deploying a ticker in-between pre-deployment and deployment.
 
@@ -51,7 +51,7 @@ Pre-deployment is done by creating a BRC20 inscription with the following JSON:
 {
   "p": "brc-20",
   "op": "predeploy",
-  "hash": "sha256(sha256(ticker bytes + salt bytes))"
+  "hash": "sha256(sha256(ticker bytes + salt bytes + deployer pkscript))"
 }
 ```
 
@@ -71,7 +71,13 @@ Then deployment is done by adding a "salt" field to the deploy operation:
 
 The `salt` field is a hex string (Can only contain 0-9 and A-F) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
 
-Hash for the ticker named `ticker` with the salt as `salt` (`"73616C74"` as hex string) would result in the following hash:
+For the deployer with pkscript `"039cb2dbd39c07cc1b6d9b6eb915715104f620f76d48464394ab283ef878536eef"`, the ticker `ticker` (`"7469636b6572"`), and the salt `salt` (`"73616c74"`) would result in the following hash:
+
+```plaintext
+> sha256(sha256(ticker + salt + pkscript))
+
+7fb93b4ad5134750808fd751ce09406a155dc877f81360bcfcb2ffefd2d8b7be
+```
 
 Predeployment inscription would look like this:
 
@@ -79,7 +85,7 @@ Predeployment inscription would look like this:
 {
   "p": "brc-20",
   "op": "predeploy",
-  "hash": "908d2226f5091146cfebd3cf8faa10e82247c0a13c9cd460928ef9a7cf1c36ae"
+  "hash": "7fb93b4ad5134750808fd751ce09406a155dc877f81360bcfcb2ffefd2d8b7be"
 }
 ```
 
