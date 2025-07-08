@@ -65,11 +65,35 @@ Then deployment is done by adding a "salt" field to the deploy operation:
   "max": "21000000",
   "lim": "1000",
   "self_mint": "true | false",
-  "salt": "<salt>",
+  "salt": "<salt as hex string i.e. 1234567890abcdef>",
 }
 ```
 
 The `salt` field is a hex string (Can only contain 0-9 and A-F) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
+
+Hash for the ticker named `ticker` with the salt as `salt` (`"73616C74"` as hex string) would result in the following hash:
+
+Predeployment inscription would look like this:
+
+```json
+{
+  "p": "brc-20",
+  "op": "predeploy",
+  "hash": "908d2226f5091146cfebd3cf8faa10e82247c0a13c9cd460928ef9a7cf1c36ae"
+}
+```
+
+And the deploy inscription would look like this:
+
+```json
+{
+  "p": "brc-20",
+  "op": "deploy",
+  "tick": "ticker",
+  "salt": "73616c74",
+  ...other fields...
+}
+```
 
 Parent of the deploy inscription must be the pre-deploy inscription, and the deploy inscription must be created at least 3 blocks after the pre-deploy inscription. This allows the indexers to verify that the pre-deploy inscription exists and has been processed before the deploy inscription is created.
 
