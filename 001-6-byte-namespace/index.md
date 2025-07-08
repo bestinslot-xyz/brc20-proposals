@@ -26,7 +26,7 @@ Enforcing a strict subset of ASCII characters ensures cross-system compatibility
  
 Rejected inputs include:
 
-- Symbols or extended Unicode (foo✓ar, foøbar)
+- Symbols or extended Unicode (foo✓ar, foøbar) except for the dash (-)
 - Tickers longer than 6 characters
 
 Tickers of 4 or 5 bytes remain governed by existing rules and are not affected.
