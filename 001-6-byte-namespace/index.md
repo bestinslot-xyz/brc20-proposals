@@ -51,7 +51,7 @@ Pre-deployment is done by creating a BRC20 inscription with the following JSON:
 {
   "p": "brc-20",
   "op": "predeploy",
-  "hash": "sha256(sha256(ticker + salt))"
+  "hash": "sha256(sha256(ticker bytes + salt bytes))"
 }
 ```
 
