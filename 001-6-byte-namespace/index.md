@@ -76,16 +76,35 @@ For the deployer with pkscript `"039cb2dbd39c07cc1b6d9b6eb915715104f620f76d48464
 ```plaintext
 > sha256(sha256(ticker + salt + pkscript))
 
-7fb93b4ad5134750808fd751ce09406a155dc877f81360bcfcb2ffefd2d8b7be
+e188d70ba1b8ea28abca9d30096a666ae45a4180a540e76ad05f5a36ab60369d
 ```
 
-Predeployment inscription would look like this:
+JavaScript function to create a pre-deploy hash:
+
+```js
+function predeploy_hash(ticker, salt, deployer_pkscript) { // All parameters are strings
+  // Build concatenated buffer
+  let predeploy_buffer = Buffer.concat([
+      Buffer.from(ticker, 'utf8'),
+      Buffer.from(salt, 'utf8'),
+      Buffer.from(deployer_pkscript, 'hex')
+  ])
+  
+  // Calculate double SHA256
+  let first = require('crypto').createHash('sha256').update(predeploy_buffer).digest()
+  let second = require('crypto').createHash('sha256').update(first).digest('hex')
+
+  return second
+}
+```
+
+Predeploy inscription would look like this:
 
 ```json
 {
   "p": "brc-20",
   "op": "predeploy",
-  "hash": "7fb93b4ad5134750808fd751ce09406a155dc877f81360bcfcb2ffefd2d8b7be"
+  "hash": "e188d70ba1b8ea28abca9d30096a666ae45a4180a540e76ad05f5a36ab60369d"
 }
 ```
 
