@@ -86,7 +86,7 @@ function predeploy_hash(ticker, salt, deployer_pkscript) { // All parameters are
   // Build concatenated buffer
   let predeploy_buffer = Buffer.concat([
       Buffer.from(ticker, 'utf8'),
-      Buffer.from(salt, 'utf8'),
+      Buffer.from(salt, 'hex'),
       Buffer.from(deployer_pkscript, 'hex')
   ])
   
