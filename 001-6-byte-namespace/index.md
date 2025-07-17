@@ -96,6 +96,12 @@ function predeploy_hash(ticker, salt, deployer_pkscript) { // All parameters are
 
   return second
 }
+
+let ticker = "ticker"
+let salt = "73616c74"
+let deployer_pkscript = "039cb2dbd39c07cc1b6d9b6eb915715104f620f76d48464394ab283ef878536eef"
+
+console.log(predeploy_hash(ticker, salt, deployer_pkscript))
 ```
 
 Predeploy inscription would look like this:
