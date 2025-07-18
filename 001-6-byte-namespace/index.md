@@ -43,11 +43,14 @@ To prevent sniping attacks on 6-byte tickers, we introduce a snipe protection me
 
 Pre-deployment allows the creator to deploy a double sha256 of the ticker, concatenated with a salt and the pre-deployer's pkscript, without revealing the ticker. This hash is then used to verify the ticker and pre-deployer during the actual deployment. This prevents anyone else from claiming a ticker by simply guessing it and/or frontrunning the deployment on blockchain.
 
-Including the pre-deployer's pkscript in the hash prevents malicious actors from replaying the pre-deploy inscription, as the hash would need to change if the pre-deployer's pkscript changes.
+Including the pre-deployer's pkscript (the pkscript of the wallet which predeploy is inscribed) in the hash prevents malicious actors from replaying the pre-deploy inscription, as the hash would need to change if the pre-deployer's pkscript changes.
 
 Deploy inscription should be a child of the pre-deploy inscription, so only the owner of the pre-deploy inscription can deploy it.
 
 Deploy inscriptions require a 3-block delay to ensure that the pre-deploy inscription is processed before the deploy inscription, so any deploy inscriptions that are earlier than 3 blocks after the pre-deploy should be rejected by the indexers. This delay allows the network to confirm the pre-deploy inscription and increases the costs of preemptively pre-deploying and deploying a ticker in-between pre-deployment and deployment.
+
+> [!NOTE]
+> Pre-deploy inscriptions are accepted 10 blocks before the launch of the 6-byte ticker namespace, which is at block height `909969`. This means that pre-deploy inscriptions can be created starting from block height `909959`.
 
 Pre-deployment is done by creating a BRC20 inscription with the following JSON:
 
@@ -73,7 +76,7 @@ Then deployment is done by adding a "salt" field to the deploy operation:
 }
 ```
 
-The `salt` field is a hex string (Can only contain 0-9 and A-F) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
+The `salt` field is a hex string (Can only contain 0-9 and A-F/a-f) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
 
 For the pre-deployer with pkscript `"5120fcdc5a7bd66b4d3a8c91f1a1cf94ad7d561f3a304bf18faf5678b1ee47e783b7"`, the ticker `ticker` (`"7469636b6572"`), and the salt `salt` (`"73616c74"`) would result in the following hash:
 
@@ -131,6 +134,9 @@ And the deploy inscription would look like this:
 ```
 
 Parent of the deploy inscription must be the pre-deploy inscription, and the deploy inscription must be created at least 3 blocks after the pre-deploy inscription. This allows the indexers to verify that the pre-deploy inscription exists and has been processed before the deploy inscription is created.
+
+> [!WARNING]
+> Since brc20 requires all inscriptions to be non-vindicated, deploy inscription must be on the first input and cannot use pointers. So, the parent should be the second input on the deploy inscribe transaction.
 
 ## Compatibility
 - BRC20 indexers currently reject 6-byte tickers, so they should index them after block height `909969`.
