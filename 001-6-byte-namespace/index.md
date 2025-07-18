@@ -71,12 +71,12 @@ Then deployment is done by adding a "salt" field to the deploy operation:
 
 The `salt` field is a hex string (Can only contain 0-9 and A-F) that is used to create a unique hash for the ticker. The `hash` field in the pre-deploy inscription must match the double SHA256 of the ticker concatenated with the salt.
 
-For the deployer with pkscript `"039cb2dbd39c07cc1b6d9b6eb915715104f620f76d48464394ab283ef878536eef"`, the ticker `ticker` (`"7469636b6572"`), and the salt `salt` (`"73616c74"`) would result in the following hash:
+For the deployer with pkscript `"5120fcdc5a7bd66b4d3a8c91f1a1cf94ad7d561f3a304bf18faf5678b1ee47e783b7"`, the ticker `ticker` (`"7469636b6572"`), and the salt `salt` (`"73616c74"`) would result in the following hash:
 
 ```plaintext
 > sha256(sha256(ticker + salt + pkscript))
 
-e188d70ba1b8ea28abca9d30096a666ae45a4180a540e76ad05f5a36ab60369d
+e87852f99ef17cae507d1eda1ddd29c2271812e05d9af33abf1e6301eba83618
 ```
 
 JavaScript function to create a pre-deploy hash:
@@ -99,7 +99,7 @@ function predeploy_hash(ticker, salt, deployer_pkscript) { // All parameters are
 
 let ticker = "ticker"
 let salt = "73616c74"
-let deployer_pkscript = "039cb2dbd39c07cc1b6d9b6eb915715104f620f76d48464394ab283ef878536eef"
+let deployer_pkscript = "5120fcdc5a7bd66b4d3a8c91f1a1cf94ad7d561f3a304bf18faf5678b1ee47e783b7"
 
 console.log(predeploy_hash(ticker, salt, deployer_pkscript))
 ```
@@ -110,7 +110,7 @@ Predeploy inscription would look like this:
 {
   "p": "brc-20",
   "op": "predeploy",
-  "hash": "e188d70ba1b8ea28abca9d30096a666ae45a4180a540e76ad05f5a36ab60369d"
+  "hash": "e87852f99ef17cae507d1eda1ddd29c2271812e05d9af33abf1e6301eba83618"
 }
 ```
 
