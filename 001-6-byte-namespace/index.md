@@ -45,7 +45,7 @@ Pre-deployment allows the creator to deploy a double sha256 of the ticker, conca
 
 Including the pre-deployer's pkscript (the pkscript of the wallet which predeploy is inscribed) in the hash prevents malicious actors from replaying the pre-deploy inscription, as the hash would need to change if the pre-deployer's pkscript changes.
 
-Deploy inscription should be a child of the pre-deploy inscription, so only the owner of the pre-deploy inscription can deploy it.
+Deploy inscription should be a child of the pre-deploy inscription, so only the owner of the pre-deploy inscription can deploy it. Predeploy inscriptions will not expire when they are transferred, and they can be used anytime after they are inscribed.
 
 Deploy inscriptions require a 3-block delay to ensure that the pre-deploy inscription is processed before the deploy inscription, so any deploy inscriptions that are earlier than 3 blocks after the pre-deploy should be rejected by the indexers. This delay allows the network to confirm the pre-deploy inscription and increases the costs of preemptively pre-deploying and deploying a ticker in-between pre-deployment and deployment.
 
