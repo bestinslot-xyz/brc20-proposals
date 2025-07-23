@@ -135,6 +135,16 @@ And the deploy inscription would look like this:
 
 Parent of the deploy inscription must be the pre-deploy inscription, and the deploy inscription must be created at least 3 blocks after the pre-deploy inscription. This allows the indexers to verify that the pre-deploy inscription exists and has been processed before the deploy inscription is created.
 
+Example transactions and inscriptions on Signet:
+
+- Predeploy reveal transaction - https://mempool.space/signet/tx/be5ae152cf1a394bb8150761c87b4a882632ce1a605f1f4ef766e49afc8256a5
+- Predeploy inscription - https://signet.ordinals.com/inscription/be5ae152cf1a394bb8150761c87b4a882632ce1a605f1f4ef766e49afc8256a5i0
+
+- Deploy reveal transaction - https://mempool.space/signet/tx/3c163eb17b61c87e9309d35e3657fecc8b938da9abf672f7aea0065c208dd0d9
+- Deploy inscription - https://signet.ordinals.com/inscription/3c163eb17b61c87e9309d35e3657fecc8b938da9abf672f7aea0065c208dd0d9i0
+
+- Indexed ticker - https://signet.bestinslot.xyz/ordinals/brc20/ticker
+
 > [!WARNING]
 > Since brc20 requires all inscriptions to be non-vindicated, deploy inscription must be on the first input and cannot use pointers. So, the parent should be the second input on the deploy inscribe transaction.
 
