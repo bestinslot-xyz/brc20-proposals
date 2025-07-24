@@ -35,7 +35,7 @@ Tickers of 4 or 5 bytes remain governed by existing rules and are not affected.
 
 Following [self-mint rules from 5-byte tickers](https://github.com/brc20-devs/brc20-proposals/blob/main/bp04-self-mint/proposal.md), BRC20 tokens with 6-byte tickers can be specified in the deploy operation as self-minted tokens.
 
-If the self-mint field is set to `"true"`, it allows everyone to mint the token. If it's unset, or set to any other value other than `"true"`, it defaults to false, meaning anyone can mint the token.
+If the self-mint field is set to `"true"`, it only allows the owner of the deploy inscription to mint the token. If it's unset, or set to any other value other than `"true"`, it defaults to false, meaning anyone can mint the token.
 
 ## Snipe Protection via Pre-deploy Inscription
 
