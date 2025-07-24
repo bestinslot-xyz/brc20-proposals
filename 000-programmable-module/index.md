@@ -202,7 +202,7 @@ If using `"d"` field, data is always sent uncompressed, and hex encoded with a 0
 
 Calldata may contain repetitions and often zero-heavy, so it's suitable for compression. Compressing and encoding the inscription data helps us reduce the on-chain costs.
 
-If using `"d"` field, data is sent as a base64 encoded byte array to make it JSON-safe and compact. The first byte of the decoded payload now defines the compression method used:
+If using `"b"` field, data is sent as a base64 encoded byte array to make it JSON-safe and compact. The first byte of the decoded payload now defines the compression method used:
 
 - `00`: Uncompressed byte array
 - `01`: NADA compression — our custom zero-run-length encoding, optimized for data with large spans of zeroes. Libraries available in [Rust](https://crates.io/crates/nada) and [JavaScript](https://www.npmjs.com/@bestinslot/nada) and the code is available in our [bestinslot-xyz/nada-rs](https://github.com/bestinslot-xyz/nada-rs) and [bestinslot-xyz/nada-js](https://github.com/bestinslot-xyz/nada-js).
