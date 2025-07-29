@@ -100,6 +100,9 @@ An example withdraw would look like the following
 
 The `module` field in the withdraw operation is selected as `BRC20PROG`. A withdrawal is processed when this inscription is sent to the target address.
 
+> [!WARNING]
+> Withdraw inscriptions should not be sent to any `OP_RETURN` address, and they will be invalid if done so. This will not cause loss of funds, but it will prevent the withdrawal from being processed. Instead, they should be sent to the address that will receive the withdrawn tokens.
+
 There is a pre-deployed `BRC20Controller` smart contract at a fixed address in the EVM. Its deposit and withdraw functions are not publicly callable and can only be used by the indexer. This contract is also ERC-20 compatible, so users can transfer their balances to any other address or smart contract with ERC-20 transfer operations using this contract.
 
 At a valid deposit event, the indexer calls the deposit function for the depositor wallet and after this point, the depositor can control the balance with smart contract calls.
