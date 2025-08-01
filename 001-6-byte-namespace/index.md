@@ -50,7 +50,7 @@ Deploy inscription should be a child of the pre-deploy inscription, so only the 
 Deploy inscriptions require a 3-block delay to ensure that the pre-deploy inscription is processed before the deploy inscription, so any deploy inscriptions that are earlier than 3 blocks after the pre-deploy should be rejected by the indexers. This delay allows the network to confirm the pre-deploy inscription and increases the costs of preemptively pre-deploying and deploying a ticker in-between pre-deployment and deployment.
 
 > [!NOTE]
-> Pre-deploy inscriptions are accepted 10 blocks before the launch of the 6-byte ticker namespace, which is at block height `909969`. This means that pre-deploy inscriptions can be created starting from block height `909959`.
+> Pre-deploy inscriptions are accepted 10 blocks before the launch of the 6-byte ticker namespace, which is at block height `912690`. This means that pre-deploy inscriptions can be created starting from block height `912680`.
 
 Pre-deployment is done by creating a BRC20 inscription with the following JSON:
 
@@ -149,7 +149,7 @@ Example transactions and inscriptions on Signet:
 > Since brc20 requires all inscriptions to be non-vindicated, deploy inscription must be on the first input and cannot use pointers. So, the parent should be the second input on the deploy inscribe transaction.
 
 ## Compatibility
-- BRC20 indexers currently reject 6-byte tickers, so they should index them after block height `909969`.
+- BRC20 indexers currently reject 6-byte tickers, so they should index them after block height `912690`.
 - BRC20 indexers must reject invalid 6-byte tickers during mint, transfer, or interaction.
 
 ## Conclusion
