@@ -39,6 +39,9 @@ Additionally, we've written several custom pre-compiled contracts:
 
 - `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
 
+> [!WARNING]
+> There's a proposal to remove `0xff` precompile, so it's potentially subject to removal [proposal](https://github.com/bestinslot-xyz/brc20-proposals/blob/main/002-prog-brc20-precompile-removal/index.md)
+
 - `0x00000000000000000000000000000000000000fe`: Check BIP-322 signature.
 
 - `0x00000000000000000000000000000000000000fd`: Get Bitcoin transaction details using tx ids. This enables interoperability with Bitcoin and bonding curve style token minting and selling using BTC.
