@@ -11,7 +11,7 @@ This document proposes the removal of the BRC20 balance precompile from BRC2.0 p
 
 ## Impact
 
-As of block 915800, no smart contracts are known to be using the BRC20 balance precompile (verified using transaction traces). However, if any contracts are using it, they will need to be updated to remove this dependency.
+As of block 916900, no smart contracts are known to be using the BRC20 balance precompile (verified using transaction traces). However, if any contracts are using it, they will need to be updated to remove this dependency.
 
 ### On Developers
 
