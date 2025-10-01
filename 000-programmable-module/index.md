@@ -37,11 +37,6 @@ The engine can set some blockchain-level variables, such as custom block hash, b
 
 Additionally, we've written several custom pre-compiled contracts:
 
-- (Removed) `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
-
-> [!CAUTION]
-> `0xff` precompile is removed, [proposal](https://github.com/bestinslot-xyz/brc20-proposals/blob/main/002-prog-brc20-precompile-removal/index.md)
-
 - `0x00000000000000000000000000000000000000fe`: Check BIP-322 signature.
 
 - `0x00000000000000000000000000000000000000fd`: Get Bitcoin transaction details using tx ids. This enables interoperability with Bitcoin and bonding curve style token minting and selling using BTC.
@@ -50,7 +45,10 @@ Additionally, we've written several custom pre-compiled contracts:
 
 - `0x00000000000000000000000000000000000000fb`: Get the time lock wallet pkscript for a given p2tr pkscript and a lock duration. This works according to our proposal in [ordinals/ord/issues/4256#issuecomment-2700779238](https://github.com/ordinals/ord/issues/4256#issuecomment-2700779238)
 
-This list can be expanded before release.
+- (Removed) `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
+
+> [!CAUTION]
+> `0xff` precompile is removed, [proposal](https://github.com/bestinslot-xyz/brc20-proposals/blob/main/002-prog-brc20-precompile-removal/index.md)
 
 Since EVM operates with a different address format than Bitcoin, we've added an easy-to-use address translation method:
 
