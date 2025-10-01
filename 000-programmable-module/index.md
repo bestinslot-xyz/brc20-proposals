@@ -37,10 +37,10 @@ The engine can set some blockchain-level variables, such as custom block hash, b
 
 Additionally, we've written several custom pre-compiled contracts:
 
-- `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
+- (Removed) `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
 
-> [!WARNING]
-> There's a proposal to remove `0xff` precompile, so it's potentially subject to removal, [proposal](https://github.com/bestinslot-xyz/brc20-proposals/blob/main/002-prog-brc20-precompile-removal/index.md)
+> [!CAUTION]
+> `0xff` precompile is removed, [proposal](https://github.com/bestinslot-xyz/brc20-proposals/blob/main/002-prog-brc20-precompile-removal/index.md)
 
 - `0x00000000000000000000000000000000000000fe`: Check BIP-322 signature.
 
