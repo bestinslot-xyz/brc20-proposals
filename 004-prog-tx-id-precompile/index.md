@@ -34,7 +34,7 @@ The implementation of the precompile will involve the following steps:
 
 ### Gas Cost
 
-The computational cost for invoking the `getBtcTxId` precompile is trivial, as it involves a simple retrieval operation. A nominal gas cost of `20` units is proposed to cover the computational overhead, and match the `getBlockHash` precompile.
+The computational cost for invoking the `getBtcTxId` precompile is trivial, as it involves a simple retrieval operation. A nominal gas cost of `20` units is proposed to cover the computational overhead, and match the `getBlockHash` opcode.
 
 ## Backward Compatibility
 
