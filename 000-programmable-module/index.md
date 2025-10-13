@@ -45,6 +45,8 @@ Additionally, we've written several custom pre-compiled contracts:
 
 - `0x00000000000000000000000000000000000000fb`: Get the time lock wallet pkscript for a given p2tr pkscript and a lock duration. This works according to our proposal in [ordinals/ord/issues/4256#issuecomment-2700779238](https://github.com/ordinals/ord/issues/4256#issuecomment-2700779238)
 
+- (Proposed) `0x00000000000000000000000000000000000000fa`: Get current Bitcoin transaction ID, as per [004-prog-tx-id-precompile](../004-prog-tx-id-precompile/index.md)
+
 - (Removed) `0x00000000000000000000000000000000000000ff`: Get non-module BRC-20 balance of a given Bitcoin wallet script and BRC-20 ticker. This enables interoperability with base BRC-20 tokens.
 
 > [!CAUTION]
