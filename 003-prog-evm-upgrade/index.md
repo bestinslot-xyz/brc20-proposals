@@ -42,6 +42,10 @@ The Prague upgrade introduces new precompiles, which can enhance the performance
 
 The upgrade will be scheduled on Signet first, and then on Mainnet after sufficient testing and validation.
 
+> Proposed Signet Block Height: 275_000 (Approx. 22 Oct 2025 12:00 PM UTC)
+
+> Proposed Mainnet Block Height: 923_369 (Approx. 13 Nov 2025 3:00 PM UTC)
+
 Block heights will be announced in advance to allow developers and indexers to prepare for the upgrade.
 
 ## Conclusion
