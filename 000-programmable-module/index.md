@@ -16,8 +16,8 @@ The Programmable Module is designed to function without any reliance on centrali
 - There is no "gas-token". The topic of "gas" is handled at the indexer level, primarily to prevent certain types of attacks towards indexers.
 - The Programmable Module does not require any sequencers to function. That said, anyone can build an application that utilizes various sequencer technologies.
 
-> [!WARNING]
-> This module is not currently enabled on Bitcoin mainnet. Until this module is released on mainnet, deposits will burn tokens and withdrawals will be invalid.
+> [!INFO]
+> This module is enabled on Bitcoin mainnet from block 912690.
 
 ## Execution Engine & Virtual Machine
 
